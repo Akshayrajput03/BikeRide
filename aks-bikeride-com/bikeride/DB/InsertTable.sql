@@ -1,1 +1,0 @@
-Insert into z_com_bikeride.users(name,username,password,email) values('Akshay Rajput','akshayrajput03','Ak$#@yra1!','akshayrajput03@gmail.com')
