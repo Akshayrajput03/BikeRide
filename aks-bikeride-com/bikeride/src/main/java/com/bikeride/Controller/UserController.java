@@ -1,7 +1,7 @@
 package com.bikeride.Controller;
 
 import com.bikeride.Model.User;
-import com.bikeride.Model.Userrequest;
+import com.bikeride.Model.Request.Userrequest;
 import com.bikeride.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

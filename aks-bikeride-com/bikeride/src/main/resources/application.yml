@@ -2,7 +2,7 @@ server:
   port: 9091
 spring:
   datasource:
-    url: jdbc:mysql://192.168.110.58:3306/com_bikeride?allowPublicKeyRetrieval=true&useSSL=false
+    url: jdbc:mysql://192.168.110.58:3306/z_com_bikeride?allowPublicKeyRetrieval=true&useSSL=false
     username: Akshay_rajput
     password: Enstage-123
     driver-class-name: com.mysql.cj.jdbc.Driver
