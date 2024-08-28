@@ -23,5 +23,5 @@ jobs:
 
       - name: Build and push Docker image
         run: |
-          docker build -t akshayrajput03/bikeride .
+          docker build -t akshayrajput03/aks-bikeride-com/bikeride .
           docker push akshayrajput03/bikeride
