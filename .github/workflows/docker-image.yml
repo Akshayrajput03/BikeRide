@@ -11,21 +11,19 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v2
 
-    - name: Set up JDK
-      uses: actions/setup-java@v3
-      with:
-        java-version: '21'
-
-    - name: Build with Gradle
-      run: ./gradlew build
-
-    - name: Build Docker image
-      run: docker build -t ${{ secrets.DOCKER_USERNAME }}/aks-bikeride-com/bikeride -f aks-bikeride-com/bikeride/Dockerfile .
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
 
     - name: Log in to Docker Hub
-      run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    - name: Build Docker image
+      run: docker build -t akshayrajput03/aks-bikeride-com/bikeride -f aks-bikeride-com/bikeride/Dockerfile .
 
     - name: Push Docker image
-      run: docker push ${{ secrets.DOCKER_USERNAME }}/aks-bikeride-com/bikeride
+      run: docker push akshayrajput03/aks-bikeride-com/bikeride
