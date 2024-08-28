@@ -11,15 +11,14 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: List files in the working directory
-        run: ls -la
+        uses: actions/checkout@v3
 
       - name: Build Docker image
-        run: docker build -t akshayrajput03/aks-bikeride-com/bikeride -f aks-bikeride-com/bikeride/Dockerfile .
+        run: |
+          docker build -t akshayrajput03/aks-bikeride-com/bikeride -f aks-bikeride-com/bikeride/Dockerfile .
 
       - name: Push Docker image
         run: |
-          echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u akshayrajput03 --password-stdin
           docker push akshayrajput03/aks-bikeride-com/bikeride
+        env:
+          DOCKER_BUILDKIT: 1
