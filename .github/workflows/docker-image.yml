@@ -26,7 +26,7 @@ jobs:
       uses: docker/login-action@v2
       with:
         username: akshayrajput03
-        password: $ak$#@yra1!
+        password: ak$#@yra1!
 
     - name: Push Docker image
       run: docker push akshayrajput03/aks-bikeride-com/bikeride
