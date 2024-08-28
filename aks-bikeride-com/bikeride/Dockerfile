@@ -4,12 +4,14 @@ FROM openjdk:21-jdk-slim
 # Set the working directory
 WORKDIR /app
 
-# Copy Gradle build files and source code
+# Copy Gradle build files
 COPY build.gradle settings.gradle ./
 COPY gradle/ gradle/
+
+# Copy source code
 COPY src/ src/
 
-# Run the Gradle build
+# Build the project
 RUN ./gradlew build
 
 # Copy the JAR file to the image
