@@ -1,10 +1,7 @@
-name: Build Docker image
+name: Build Docker Image
 
 on:
   push:
-    branches:
-      - main
-  pull_request:
     branches:
       - main
 
@@ -14,21 +11,22 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v2
 
-    - name: Print working directory and list files
-      run: |
-        echo "Current working directory:"
-        pwd
-        echo "Listing files:"
-        ls -R
-
-    - name: Set up JDK 21
-      uses: actions/setup-java@v3
-      with:
-        java-version: '21'
-        distribution: 'zulu'
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
 
     - name: Build Docker image
-      run: |
-        docker build -t akshayrajput03/aks-bikeride-com/bikeride -f aks-bikeride-com/bikeride/Dockerfile .
+      run: docker build -t akshayrajput03/aks-bikeride-com/bikeride -f aks-bikeride-com/bikeride/Dockerfile .
+
+    - name: List Docker images
+      run: docker images
+
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: akshayrajput03
+        password: $ak$#@yra1!
+
+    - name: Push Docker image
+      run: docker push akshayrajput03/aks-bikeride-com/bikeride
