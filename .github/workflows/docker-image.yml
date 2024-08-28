@@ -26,4 +26,4 @@ jobs:
       run: docker build -t akshayrajput03/aks-bikeride-com/bikeride -f aks-bikeride-com/bikeride/Dockerfile .
 
     - name: Push Docker image
-      run: docker push akshayrajput03/aks-bikeride-com
+      run: docker push akshayrajput03/aks-bikeride-com/bikeride
