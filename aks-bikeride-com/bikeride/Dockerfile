@@ -1,30 +1,22 @@
-# Use the official OpenJDK 21 image as a base for the build stage
-FROM openjdk:21-jdk-slim AS builder
-
-# Set the working directory
-WORKDIR /app
-
-# Copy Gradle build files and wrapper
-COPY build.gradle settings.gradle ./
-COPY gradle/ gradle/
-
-# Copy the source code
-COPY src/ src/
-
-# Run the Gradle build
-RUN ./gradlew build -x test
-
-# Use a smaller image for the runtime
+# Use an OpenJDK base image
 FROM openjdk:21-jdk-slim
 
 # Set the working directory
 WORKDIR /app
 
-# Copy the JAR file from the build stage
-COPY --from=builder /app/build/libs/demo-0.0.1-SNAPSHOT.jar app.jar
+# Copy Gradle build files and source code
+COPY build.gradle settings.gradle ./
+COPY gradle/ gradle/
+COPY src/ src/
 
-# Expose the port your application will run on
+# Run the Gradle build
+RUN ./gradlew build
+
+# Copy the JAR file to the image
+COPY build/libs/demo-0.0.1-SNAPSHOT.jar app.jar
+
+# Expose the port the app runs on
 EXPOSE 8080
 
-# Command to run the JAR file
+# Run the JAR file
 ENTRYPOINT ["java", "-jar", "/app/app.jar"]
