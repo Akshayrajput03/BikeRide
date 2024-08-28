@@ -1,30 +1,23 @@
-# Use a base image with JDK 21
-FROM openjdk:21-jdk-slim as build
-
-# Set the working directory
-WORKDIR /app
-
-# Copy Gradle build files and the Gradle wrapper
-COPY gradle/ gradle/
-COPY build.gradle settings.gradle ./
-
-# Copy the source code
-COPY src/ src/
-
-# Run Gradle to build the application
-RUN ./gradlew build
-
-# Use a new base image for the final stage
+# Use the official OpenJDK 21 image as the base image
 FROM openjdk:21-jdk-slim
 
-# Set the working directory
+# Set the working directory inside the Docker container
 WORKDIR /app
 
-# Copy the JAR file from the build stage
-COPY --from=build /app/build/libs/demo-0.0.1-SNAPSHOT.jar app.jar
+# Copy the build.gradle and settings.gradle files
+COPY aks-bikeride-com/bikeride/build.gradle aks-bikeride-com/bikeride/settings.gradle ./
 
-# Expose port 8080
+# Copy the gradle wrapper
+COPY aks-bikeride-com/bikeride/gradle/ gradle/
+
+# Copy the source code
+COPY aks-bikeride-com/bikeride/src/ src/
+
+# Copy the JAR file built by Gradle
+COPY aks-bikeride-com/bikeride/build/libs/demo-0.0.1-SNAPSHOT.jar app.jar
+
+# Expose the port the app runs on
 EXPOSE 8080
 
-# Command to run the JAR file
+# Define the command to run the application
 ENTRYPOINT ["java", "-jar", "app.jar"]
