@@ -15,4 +15,6 @@ public interface RideService {
     BikeRideResponse joinRide(JoinRideRequest joinRideRequest);
     BikeRideResponse addUser(AddUserToRide addUserToRide);
     BikeRideResponse removeUser(AddUserToRide addUserToRide);
+    BikeRideResponse rideDetails(RideRequest rideRequest);
+    BikeRideResponse updateRide(RideRequest rideRequest);
 }

@@ -19,9 +19,10 @@ public class LoginController {
 
     @PostMapping("/user")
     public ResponseEntity<User> loginUser(@RequestBody Userrequest userrequest) {
-        log.info("LoginController : loginUser{}",userrequest);
+        log.info("LoginController : loginUser {}",userrequest);
         User us=userService.getuser(userrequest);
         if(us!=null){
+            log.info("loginUser :{}",us);
             return ResponseEntity.ok().body(us);
         }
         return ResponseEntity.notFound().build();
@@ -37,7 +38,14 @@ public class LoginController {
     @PostMapping("/forgot")
     public ResponseEntity<BikeRideResponse> forgotPasswordOrUsername(@RequestBody Userrequest userrequest) {
         log.info("LoginController : forgotPasswordOrUsername{}",userrequest);
-        BikeRideResponse bikeRideResponse=userService.forgotPasswordOrUsername(userrequest);
+        BikeRideResponse bikeRideResponse=userService.forgotPassword(userrequest);
+        return ResponseEntity.ok().body(bikeRideResponse);
+    }
+
+    @PostMapping("/checkUsername")
+    public ResponseEntity<BikeRideResponse> checkUsername(@RequestBody Userrequest userrequest) {
+        log.info("LoginController : checkUsername{}",userrequest);
+        BikeRideResponse bikeRideResponse=userService.checkUsername(userrequest);
         return ResponseEntity.ok().body(bikeRideResponse);
     }
 }

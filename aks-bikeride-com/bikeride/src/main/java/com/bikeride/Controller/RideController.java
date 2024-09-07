@@ -58,8 +58,24 @@ public class RideController {
 
     @PostMapping("/removeUser")
     public ResponseEntity removeUser(@RequestBody AddUserToRide addUserToRide){
-        log.info("RideController:addUser {}",addUserToRide);
+        log.info("RideController:removeUser {}",addUserToRide);
         BikeRideResponse bikeRideResponse=rideService.removeUser(addUserToRide);
+        return ResponseEntity.ok().body(bikeRideResponse);
+    }
+
+    @PostMapping("/viewRide")
+    public ResponseEntity rideDetails(@RequestBody RideRequest rideRequest){
+        log.info("RideController:rideDetails {}",rideRequest);
+        BikeRideResponse bikeRideResponse=rideService.rideDetails(rideRequest);
+        log.info("RideController:rideDetails response {}",bikeRideResponse);
+        return ResponseEntity.ok().body(bikeRideResponse);
+    }
+
+    @PostMapping("/updateRide")
+    public ResponseEntity updateRide(@RequestBody RideRequest rideRequest){
+        log.info("RideController:updateRide {}",rideRequest);
+        BikeRideResponse bikeRideResponse=rideService.updateRide(rideRequest);
+        log.info("RideController:updateRide response {}",bikeRideResponse);
         return ResponseEntity.ok().body(bikeRideResponse);
     }
 }

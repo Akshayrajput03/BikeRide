@@ -41,7 +41,21 @@ public class UserSerivceImpl implements UserService {
     }
 
     @Override
-    public BikeRideResponse forgotPasswordOrUsername(Userrequest userrequest) {
+    public BikeRideResponse forgotPassword(Userrequest userrequest) {
+        BikeRideResponse bikeRideResponse=new BikeRideResponse();
+        int row=userRepository.updatePassword(userrequest);
+        if(row>0){
+            bikeRideResponse.setResCode("2001");
+            bikeRideResponse.setErrorDesc("Password reset successfully");
+            return bikeRideResponse;
+        }
+        bikeRideResponse.setResCode("4001");
+        bikeRideResponse.setErrorDesc("Password reset failed");
+        return bikeRideResponse;
+    }
+
+    @Override
+    public BikeRideResponse checkUsername(Userrequest userrequest) {
         BikeRideResponse bikeRideResponse=new BikeRideResponse();
         User us=userRepository.checkForUserName(userrequest.getUsername());
         if(us==null){

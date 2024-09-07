@@ -9,5 +9,6 @@ import org.springframework.stereotype.Service;
 public interface UserService {
     User getuser(Userrequest userrequest);
     BikeRideResponse registeruser(Userrequest userrequest);
-    BikeRideResponse forgotPasswordOrUsername(Userrequest userrequest);
+    BikeRideResponse forgotPassword(Userrequest userrequest);
+    BikeRideResponse checkUsername(Userrequest userrequest);
 }

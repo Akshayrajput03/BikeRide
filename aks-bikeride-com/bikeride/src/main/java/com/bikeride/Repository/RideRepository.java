@@ -27,8 +27,8 @@ import java.util.List;
 public class RideRepository {
 
     private final JdbcTemplate jdbcTemplate;
-    private final String CREATE_RIDE="INSERT INTO Ride(ride_name,ride_type,ride_location,ride_date,ride_time,userId,user_name) values(?,?,?,?,?,?,?)";
-    private final String CREATE_USER_RIDE = "INSERT INTO User_Ride(ride_id,users_id,ride_name,ride_type) values(?,?,?,?)";
+    private final String CREATE_RIDE="INSERT INTO Ride(ride_name,ride_type,ride_location,ride_date,ride_time,userId,user_name,mobileNumber,itenary) values(?,?,?,?,?,?,?,?,?)";
+    private final String CREATE_USER_RIDE = "INSERT INTO User_Ride(ride_id,users_id,ride_name,ride_type,ride_add_user_name) values(?,?,?,?,?)";
 
 
     public RideRepository(JdbcTemplate jdbcTemplate) {
@@ -49,6 +49,8 @@ public class RideRepository {
             ps.setString(5, rideRequest.getTime());
             ps.setLong(6, rideRequest.getUserId());
             ps.setString(7, rideRequest.getUsername());
+            ps.setString(8, rideRequest.getMobileNumber());
+            ps.setString(9, rideRequest.getItenary());
             return ps;
         }, keyHolder);
 
@@ -58,7 +60,7 @@ public class RideRepository {
 
             // Insert into User_Ride table
             jdbcTemplate.update(CREATE_USER_RIDE, rideId, rideRequest.getUserId(),
-                    rideRequest.getRideName(), rideRequest.getRideType());
+                    rideRequest.getRideName(), rideRequest.getRideType(),rideRequest.getUsername());
 
             return 1;
         } else {
@@ -195,7 +197,7 @@ public class RideRepository {
 
     public int addUser(AddUserToRide addUserToRide){
         String checkRideSql = "SELECT * FROM Ride WHERE id = ?";
-        String insertUserRideSql = "INSERT INTO User_Ride(ride_id, users_id, ride_name, ride_type) VALUES (?, ?, ?, ?)";
+        String insertUserRideSql = "INSERT INTO User_Ride(ride_id, users_id, ride_name, ride_type,ride_add_user_name) VALUES (?, ?, ?, ?,?)";
         RideEvent rideEvent = jdbcTemplate.queryForObject(checkRideSql, new Object[]{addUserToRide.getRideId()},
                 (ResultSet rs, int rowNum) -> {
                     RideEvent event = new RideEvent();
@@ -211,22 +213,105 @@ public class RideRepository {
                     rideEvent.getId(),
                     addUserToRide.getUserId(),
                     rideEvent.getRideName(),
-                    rideEvent.getRideType());
+                    rideEvent.getRideType(),
+                    addUserToRide.getRideAddUserName());
+            return  rowsAffected;
+        }
+        return 0;
+    }
+
+    public int updateRide(RideRequest rideRequest){
+        String checkRideSql = "SELECT * FROM Ride WHERE id = ?";
+        String updateRideSql = "update Ride set itenary = ? where id = ?";
+        RideEvent rideEvent = jdbcTemplate.queryForObject(checkRideSql, new Object[]{rideRequest.getRideId()},
+                (ResultSet rs, int rowNum) -> {
+                    RideEvent event = new RideEvent();
+                    event.setId(rs.getLong("id"));
+                    event.setRideName(rs.getString("ride_name"));
+                    event.setRideType(rs.getString("ride_type"));
+                    return event;
+                });
+        log.info("checkRideSql :{}",rideEvent);
+        if (rideEvent != null) {
+            // Insert the user into the User_Ride table
+            int rowsAffected = jdbcTemplate.update(updateRideSql,
+                    rideRequest.getItenary(),
+                    rideEvent.getId());
             return  rowsAffected;
         }
         return 0;
     }
 
     public int removeUser(AddUserToRide addUserToRide){
-        String checkUserRideSql = "SELECT COUNT(*) FROM User_Ride WHERE ride_id = ? AND users_id = ?";
-        String deleteUserRideSql = "DELETE FROM User_Ride WHERE ride_id = ? AND users_id = ?";
-        Integer count = jdbcTemplate.queryForObject(checkUserRideSql, new Object[]{addUserToRide.getRideId(), addUserToRide.getUserId()}, Integer.class);
+        String deleteUserRideSql = "DELETE FROM User_Ride WHERE ride_id = ? AND ride_add_user_name = ?";
 
-        if (count != null && count > 0) {
             // If the user is part of the ride, remove them
-            int rowsAffected = jdbcTemplate.update(deleteUserRideSql, addUserToRide.getRideId(), addUserToRide.getUserId());
+            int rowsAffected = jdbcTemplate.update(deleteUserRideSql, addUserToRide.getRideId(), addUserToRide.getRideAddUserName());
             return rowsAffected;
+
+    }
+
+    public RideEvent rideDetails(RideRequest rideRequest){
+        log.info("RideRepository rideDetails: {}", rideRequest);
+        String rideUserSql = "SELECT * FROM user_ride WHERE ride_id = ?";
+        String rideSql = "SELECT * FROM ride WHERE id = ?";
+
+        RideEvent rideEvent = new RideEvent();
+
+        try {
+            jdbcTemplate.query(rideSql, new PreparedStatementSetter() {
+                @Override
+                public void setValues(PreparedStatement ps) throws SQLException {
+                    ps.setString(1, rideRequest.getRideId());
+                }
+            }, new ResultSetExtractor<RideEvent>() {
+                @Override
+                public RideEvent extractData(ResultSet rs) throws SQLException {
+                    log.info("extractData result ride detail:{}", rs);
+
+                    List<User> userList = new ArrayList<>();
+                    while (rs.next()) {
+                        rideEvent.setRideName(rs.getString("ride_name"));
+                        rideEvent.setId(rs.getLong("id"));
+                        rideEvent.setUsername(rs.getString("user_name"));
+                        rideEvent.setUserId(rs.getString("userId"));
+                        rideEvent.setLocation(rs.getString("ride_location"));
+                        rideEvent.setDateTime(rs.getString("ride_date") + " " + rs.getString("ride_time"));
+                        rideEvent.setMobileNumber(rs.getString("mobileNumber"));
+                        rideEvent.setItenary(rs.getString("itenary"));
+                    }
+                    return rideEvent;
+                }
+            });
+            log.info("ride details: {}",rideEvent);
+            jdbcTemplate.query(rideUserSql, new PreparedStatementSetter() {
+                @Override
+                public void setValues(PreparedStatement ps) throws SQLException {
+                    ps.setString(1, rideRequest.getRideId());
+                }
+            }, new ResultSetExtractor<RideEvent>() {
+                @Override
+                public RideEvent extractData(ResultSet rs) throws SQLException {
+                    log.info("extractData result ride detail:{}", rs);
+
+                    List<User> userList = new ArrayList<>();
+                    while (rs.next()) {
+                        User us = new User();
+                        rideEvent.setId(rs.getLong("id"));
+                        rideEvent.setRideName(rs.getString("ride_name"));
+                        rideEvent.setRideType(rs.getString("ride_type"));
+                        rideEvent.setUserId(rs.getString("users_id"));
+                        us.setUsername(rs.getString("ride_add_user_name"));
+                        userList.add(us);
+                    }
+                    rideEvent.setUser(userList);
+                    return rideEvent;
+                }
+            });
+        } catch (Exception e) {
+            log.error("Error while fetching ride user details", e);
         }
-        return 0;
+
+        return rideEvent;
     }
 }

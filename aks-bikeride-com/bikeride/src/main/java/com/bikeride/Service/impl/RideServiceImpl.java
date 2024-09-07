@@ -107,4 +107,33 @@ public class RideServiceImpl implements RideService {
         }
         return bikeRideResponse;
     }
+
+    @Override
+    public BikeRideResponse rideDetails(RideRequest rideRequest) {
+        BikeRideResponse bikeRideResponse=new BikeRideResponse();
+        RideEvent rideEvent=rideRepository.rideDetails(rideRequest);
+        if(rideEvent!=null){
+            bikeRideResponse.setResCode("2000");
+            bikeRideResponse.setResStatus("Success");
+            bikeRideResponse.setData(rideEvent);
+        }else{
+            bikeRideResponse.setResCode("4001");
+            bikeRideResponse.setResStatus("Failure");
+        }
+        return bikeRideResponse;
+    }
+
+    @Override
+    public BikeRideResponse updateRide(RideRequest rideRequest) {
+        BikeRideResponse bikeRideResponse=new BikeRideResponse();
+        int row=rideRepository.updateRide(rideRequest);
+        if(row!=0){
+            bikeRideResponse.setResCode("2000");
+            bikeRideResponse.setResStatus("Success");
+        }else{
+            bikeRideResponse.setResCode("4001");
+            bikeRideResponse.setResStatus("Failure");
+        }
+        return bikeRideResponse;
+    }
 }

@@ -8,4 +8,5 @@ public class AddUserToRide {
     private String rideId;
     private String userId;
     private String adduserId;
+    private String rideAddUserName;
 }
