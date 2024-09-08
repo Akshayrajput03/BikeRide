@@ -28,7 +28,7 @@ public class RideRepository {
 
     private final JdbcTemplate jdbcTemplate;
     private final String CREATE_RIDE="INSERT INTO ride(ride_name,ride_type,ride_location,ride_date,ride_time,userId,user_name,mobileNumber,itenary) values(?,?,?,?,?,?,?,?,?)";
-    private final String CREATE_USER_RIDE = "INSERT INTO user_ride(ride_id,users_id,ride_name,ride_type,ride_add_user_name) values(?,?,?,?,?)";
+    private final String CREATE_USER_RIDE = "INSERT INTO user_ride(ride_id,users_id,ride_name,ride_type,ride_add_user_name,mobileNumber) values(?,?,?,?,?,?)";
 
 
     public RideRepository(JdbcTemplate jdbcTemplate) {
@@ -60,7 +60,7 @@ public class RideRepository {
 
             // Insert into User_Ride table
             jdbcTemplate.update(CREATE_USER_RIDE, rideId, rideRequest.getUserId(),
-                    rideRequest.getRideName(), rideRequest.getRideType(),rideRequest.getUsername());
+                    rideRequest.getRideName(), rideRequest.getRideType(),rideRequest.getUsername(),rideRequest.getMobileNumber());
 
             return 1;
         } else {
