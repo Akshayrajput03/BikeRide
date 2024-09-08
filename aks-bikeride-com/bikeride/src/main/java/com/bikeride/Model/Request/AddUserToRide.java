@@ -9,4 +9,5 @@ public class AddUserToRide {
     private String userId;
     private String adduserId;
     private String rideAddUserName;
+    private String mobileNumber;
 }

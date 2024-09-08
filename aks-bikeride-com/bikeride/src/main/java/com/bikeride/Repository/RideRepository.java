@@ -197,7 +197,7 @@ public class RideRepository {
 
     public int addUser(AddUserToRide addUserToRide){
         String checkRideSql = "SELECT * FROM ride WHERE id = ?";
-        String insertUserRideSql = "INSERT INTO user_ride(ride_id, users_id, ride_name, ride_type,ride_add_user_name) VALUES (?, ?, ?, ?,?)";
+        String insertUserRideSql = "INSERT INTO user_ride(ride_id, users_id, ride_name, ride_type,ride_add_user_name,mobileNumber) VALUES (?, ?, ?, ?,?,mobileNumber)";
         RideEvent rideEvent = jdbcTemplate.queryForObject(checkRideSql, new Object[]{addUserToRide.getRideId()},
                 (ResultSet rs, int rowNum) -> {
                     RideEvent event = new RideEvent();
@@ -214,7 +214,8 @@ public class RideRepository {
                     addUserToRide.getUserId(),
                     rideEvent.getRideName(),
                     rideEvent.getRideType(),
-                    addUserToRide.getRideAddUserName());
+                    addUserToRide.getRideAddUserName(),
+                    addUserToRide.getMobileNumber());
             return  rowsAffected;
         }
         return 0;
