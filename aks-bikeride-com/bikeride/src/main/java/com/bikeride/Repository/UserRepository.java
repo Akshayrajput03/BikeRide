@@ -15,7 +15,7 @@ import org.springframework.stereotype.Repository;
 public class UserRepository {
 
     private final JdbcTemplate jdbcTemplate;
-    private final String INSERT_USER="INSERT INTO USERS(name,username,password,email,mobileNumber) values(?,?,?,?,?)";
+    private final String INSERT_USER="INSERT INTO users(name,username,password,email,mobileNumber) values(?,?,?,?,?)";
     private final String UPDATE_PASSWORD="UPDATE users set password = ? where username = ?";
 
     public UserRepository(JdbcTemplate jdbcTemplate) {

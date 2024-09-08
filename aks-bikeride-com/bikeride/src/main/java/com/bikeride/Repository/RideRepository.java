@@ -27,8 +27,8 @@ import java.util.List;
 public class RideRepository {
 
     private final JdbcTemplate jdbcTemplate;
-    private final String CREATE_RIDE="INSERT INTO Ride(ride_name,ride_type,ride_location,ride_date,ride_time,userId,user_name,mobileNumber,itenary) values(?,?,?,?,?,?,?,?,?)";
-    private final String CREATE_USER_RIDE = "INSERT INTO User_Ride(ride_id,users_id,ride_name,ride_type,ride_add_user_name) values(?,?,?,?,?)";
+    private final String CREATE_RIDE="INSERT INTO ride(ride_name,ride_type,ride_location,ride_date,ride_time,userId,user_name,mobileNumber,itenary) values(?,?,?,?,?,?,?,?,?)";
+    private final String CREATE_USER_RIDE = "INSERT INTO user_ride(ride_id,users_id,ride_name,ride_type,ride_add_user_name) values(?,?,?,?,?)";
 
 
     public RideRepository(JdbcTemplate jdbcTemplate) {
@@ -167,8 +167,8 @@ public class RideRepository {
 
     public int joinRide(JoinRideRequest joinRideRequest){
         List<RideEvent> list = new ArrayList<>();
-        String selectSql = "SELECT * FROM Ride WHERE ride_type = ? AND id = ?";
-        String insertSql = "INSERT INTO User_Ride(ride_id, users_id, ride_name, ride_type) VALUES (?, ?, ?, ?)";
+        String selectSql = "SELECT * FROM ride WHERE ride_type = ? AND id = ?";
+        String insertSql = "INSERT INTO user_ride(ride_id, users_id, ride_name, ride_type) VALUES (?, ?, ?, ?)";
 
         // Check if the ride exists and is of type "PRIVATE"
         jdbcTemplate.query(selectSql, new Object[]{"PRIVATE", joinRideRequest.getRideId()},
@@ -196,8 +196,8 @@ public class RideRepository {
     }
 
     public int addUser(AddUserToRide addUserToRide){
-        String checkRideSql = "SELECT * FROM Ride WHERE id = ?";
-        String insertUserRideSql = "INSERT INTO User_Ride(ride_id, users_id, ride_name, ride_type,ride_add_user_name) VALUES (?, ?, ?, ?,?)";
+        String checkRideSql = "SELECT * FROM ride WHERE id = ?";
+        String insertUserRideSql = "INSERT INTO user_ride(ride_id, users_id, ride_name, ride_type,ride_add_user_name) VALUES (?, ?, ?, ?,?)";
         RideEvent rideEvent = jdbcTemplate.queryForObject(checkRideSql, new Object[]{addUserToRide.getRideId()},
                 (ResultSet rs, int rowNum) -> {
                     RideEvent event = new RideEvent();
@@ -221,8 +221,8 @@ public class RideRepository {
     }
 
     public int updateRide(RideRequest rideRequest){
-        String checkRideSql = "SELECT * FROM Ride WHERE id = ?";
-        String updateRideSql = "update Ride set itenary = ? where id = ?";
+        String checkRideSql = "SELECT * FROM ride WHERE id = ?";
+        String updateRideSql = "update ride set itenary = ? where id = ?";
         RideEvent rideEvent = jdbcTemplate.queryForObject(checkRideSql, new Object[]{rideRequest.getRideId()},
                 (ResultSet rs, int rowNum) -> {
                     RideEvent event = new RideEvent();
@@ -243,7 +243,7 @@ public class RideRepository {
     }
 
     public int removeUser(AddUserToRide addUserToRide){
-        String deleteUserRideSql = "DELETE FROM User_Ride WHERE ride_id = ? AND ride_add_user_name = ?";
+        String deleteUserRideSql = "DELETE FROM user_ride WHERE ride_id = ? AND ride_add_user_name = ?";
 
             // If the user is part of the ride, remove them
             int rowsAffected = jdbcTemplate.update(deleteUserRideSql, addUserToRide.getRideId(), addUserToRide.getRideAddUserName());
