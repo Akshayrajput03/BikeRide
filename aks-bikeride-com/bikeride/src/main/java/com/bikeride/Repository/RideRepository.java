@@ -325,7 +325,7 @@ public class RideRepository {
     }
 
     public int deleteRide(RideRequest rideRequest){
-        String deleteRideSql = "DELETE FROM ride WHERE ride_id = ?";
+        String deleteRideSql = "DELETE FROM ride WHERE id = ?";
         String deleteUserRideSql="DELETE FROM user_ride WHERE ride_id = ?";
         // If the user is part of the ride, remove them
         int rowsAffected = jdbcTemplate.update(deleteRideSql, rideRequest.getRideId());
