@@ -15,6 +15,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -35,36 +36,43 @@ public class RideRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public int createRide(RideRequest rideRequest){
-        String sql = CREATE_RIDE;
+    @Transactional(rollbackFor = Exception.class)
+    public int createRide(RideRequest rideRequest) {
+        try {
+            // Insert into Ride table
+            String sql = CREATE_RIDE;
+            KeyHolder keyHolder = new GeneratedKeyHolder();
+            int rowsAffected = jdbcTemplate.update(connection -> {
+                PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
+                ps.setString(1, rideRequest.getRideName());
+                ps.setString(2, rideRequest.getRideType());
+                ps.setString(3, rideRequest.getLocation());
+                ps.setString(4, rideRequest.getDate());
+                ps.setString(5, rideRequest.getTime());
+                ps.setLong(6, rideRequest.getUserId());
+                ps.setString(7, rideRequest.getUsername());
+                ps.setString(8, rideRequest.getMobileNumber());
+                ps.setString(9, rideRequest.getItenary());
+                return ps;
+            }, keyHolder);
 
-        // Insert into Ride table
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        int rowsAffected = jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, rideRequest.getRideName());
-            ps.setString(2, rideRequest.getRideType());
-            ps.setString(3, rideRequest.getLocation());
-            ps.setString(4, rideRequest.getDate());
-            ps.setString(5, rideRequest.getTime());
-            ps.setLong(6, rideRequest.getUserId());
-            ps.setString(7, rideRequest.getUsername());
-            ps.setString(8, rideRequest.getMobileNumber());
-            ps.setString(9, rideRequest.getItenary());
-            return ps;
-        }, keyHolder);
+            // Check if the insert into Ride table was successful
+            if (rowsAffected > 0) {
+                // Get the generated ride_id
+                Long rideId = keyHolder.getKey().longValue();
 
-        if (rowsAffected > 0) {
-            // Get the generated ride_id
-            Long rideId = keyHolder.getKey().longValue();
+                // Insert into User_Ride table
+                jdbcTemplate.update(CREATE_USER_RIDE, rideId, rideRequest.getUserId(),
+                        rideRequest.getRideName(), rideRequest.getRideType(),
+                        rideRequest.getUsername(), rideRequest.getMobileNumber());
 
-            // Insert into User_Ride table
-            jdbcTemplate.update(CREATE_USER_RIDE, rideId, rideRequest.getUserId(),
-                    rideRequest.getRideName(), rideRequest.getRideType(),rideRequest.getUsername(),rideRequest.getMobileNumber());
-
-            return 1;
-        } else {
-            return 0; // or throw an exception
+                return 1;
+            } else {
+                return 0; // or throw an exception
+            }
+        } catch (DataAccessException ex) {
+            // Exception handling - transaction will automatically rollback
+            throw new RuntimeException("Error occurred while creating ride", ex);
         }
     }
 
@@ -197,7 +205,7 @@ public class RideRepository {
 
     public int addUser(AddUserToRide addUserToRide){
         String checkRideSql = "SELECT * FROM ride WHERE id = ?";
-        String insertUserRideSql = "INSERT INTO user_ride(ride_id, users_id, ride_name, ride_type,ride_add_user_name,mobileNumber) VALUES (?, ?, ?, ?,?,mobileNumber)";
+        String insertUserRideSql = "INSERT INTO user_ride(ride_id, users_id, ride_name, ride_type,ride_add_user_name,mobileNumber) VALUES (?, ?, ?, ?,?,?)";
         RideEvent rideEvent = jdbcTemplate.queryForObject(checkRideSql, new Object[]{addUserToRide.getRideId()},
                 (ResultSet rs, int rowNum) -> {
                     RideEvent event = new RideEvent();

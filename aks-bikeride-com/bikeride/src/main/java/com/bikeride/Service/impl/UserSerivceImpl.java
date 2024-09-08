@@ -33,9 +33,9 @@ public class UserSerivceImpl implements UserService {
              userRepository.insertUser(userrequest);
             bikeRideResponse.setResStatus("Created");
             bikeRideResponse.setResCode("2000");
-        }else{
+        }else {
             bikeRideResponse.setResCode("4001");
-            bikeRideResponse.setErrorDesc("User Already Registered");
+            bikeRideResponse.setErrorDesc("Username is already taken, please try different username");
         }
         return bikeRideResponse;
     }
