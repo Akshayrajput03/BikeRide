@@ -78,4 +78,12 @@ public class RideController {
         log.info("RideController:updateRide response {}",bikeRideResponse);
         return ResponseEntity.ok().body(bikeRideResponse);
     }
+
+    @PostMapping("/deleteRide")
+    public ResponseEntity deleteRide(@RequestBody RideRequest rideRequest){
+        log.info("RideController: deleteRide {}",rideRequest);
+        BikeRideResponse bikeRideResponse=rideService.deleteRide(rideRequest);
+        log.info("RideController:deleteRide response {}",bikeRideResponse);
+        return ResponseEntity.ok().body(bikeRideResponse);
+    }
 }

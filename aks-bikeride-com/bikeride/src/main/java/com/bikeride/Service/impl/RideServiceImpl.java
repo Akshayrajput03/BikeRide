@@ -166,4 +166,18 @@ public class RideServiceImpl implements RideService {
         }
         return bikeRideResponse;
     }
+
+    @Override
+    public BikeRideResponse deleteRide(RideRequest rideRequest) {
+        BikeRideResponse bikeRideResponse=new BikeRideResponse();
+        int row=rideRepository.deleteRide(rideRequest);
+        if(row!=0){
+            bikeRideResponse.setResCode("2000");
+            bikeRideResponse.setResStatus("Success");
+        }else{
+            bikeRideResponse.setResCode("4001");
+            bikeRideResponse.setResStatus("Failure");
+        }
+        return bikeRideResponse;
+    }
 }

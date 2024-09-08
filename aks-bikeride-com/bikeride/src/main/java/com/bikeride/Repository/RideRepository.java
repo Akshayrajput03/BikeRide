@@ -323,4 +323,14 @@ public class RideRepository {
 
         return rideEvent;
     }
+
+    public int deleteRide(RideRequest rideRequest){
+        String deleteRideSql = "DELETE FROM ride WHERE ride_id = ?";
+        String deleteUserRideSql="DELETE FROM user_ride WHERE ride_id = ?";
+        // If the user is part of the ride, remove them
+        int rowsAffected = jdbcTemplate.update(deleteRideSql, rideRequest.getRideId());
+         rowsAffected += jdbcTemplate.update(deleteUserRideSql, rideRequest.getRideId());
+        return rowsAffected;
+
+    }
 }
